@@ -1,0 +1,7 @@
+Метод решения,"Выбранный интервал [a,b]",Полученное решение,Количество итераций
+Newton method,"1, 2",1.60702222,5
+Chords method,"1, 2",1.60702222,14
+Secants method,"1, 2",1.60702222,6
+Finite differential Newton method,"1, 2",1.60702222,5
+Steffensen method,"1.4, 2",1.60702222,8
+Relaxation method,"1, 2",1.60702224,10
