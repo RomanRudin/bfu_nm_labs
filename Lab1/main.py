@@ -3,9 +3,11 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from math import *
 from pathlib import Path
+import os
 
-if not Path.exists(Path(r'Lab1\Results')):
-    Path.mkdir(Path(r'Lab1\Results'))
+WORKDIR = Path(__file__).parent
+if not Path.exists(Path(fr'{WORKDIR}\Results')):
+    Path.mkdir(Path(fr'{WORKDIR}\Results'))
 
 pd.options.display.float_format = '{:.8f}'.format
 FUNCTION = 'exp(x - 1) + 2*x^2 - 7'                           # Change this to your function
@@ -13,7 +15,7 @@ FUNCTION = 'exp(x - 1) + 2*x^2 - 7'                           # Change this to y
 
 def logger(file_name: str, data: list[int], interval: tuple[int, int]) -> pd.Series:
     result = pd.DataFrame({'x': data})
-    with open(fr'Lab1\Results\{file_name}.csv', 'w') as file:
+    with open(fr'{WORKDIR}\Results\{file_name}.csv', 'w') as file:
         result.to_csv(path_or_buf=file, sep='\t', lineterminator='\n')
     # print(result)
     return pd.DataFrame({'Метод решения': [file_name],
@@ -121,6 +123,6 @@ full_result = pd.concat([full_result, logger('Relaxation method', result, (a, b)
 
 
 # Итоги
-with open(r'Lab1\Results\Results.csv', 'w', encoding='utf-8') as file:
+with open(fr'{WORKDIR}\Results\Results.csv', 'w', encoding='utf-8') as file:
     full_result.to_csv(path_or_buf=file, index=False, lineterminator='\n')
 print(full_result)
