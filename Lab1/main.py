@@ -8,7 +8,7 @@ if not Path.exists(Path(r'Lab1\Results')):
     Path.mkdir(Path(r'Lab1\Results'))
 
 pd.options.display.float_format = '{:.8f}'.format
-FUNCTION = 'exp(x - 1) + 2*x^2 - 7'
+FUNCTION = 'exp(x - 1) + 2*x^2 - 7'                           # Change this to your function
 
 
 def logger(file_name: str, data: list[int], interval: tuple[int, int]) -> pd.Series:
@@ -22,18 +22,18 @@ def logger(file_name: str, data: list[int], interval: tuple[int, int]) -> pd.Ser
         'Количество итераций': [len(data)]})
 
 def f(x: float) -> float:
-    return np.exp(x - 1) + 2*x**2 - 7
+    return np.exp(x - 1) + 2*x**2 - 7   # Change this to your function
 
 def df(x: float) -> float:
-    return np.exp(x - 1) + 4*x
+    return np.exp(x - 1) + 4*x          # Change this to your function's derivative
 
 def ddf(x: float) -> float:
-    return np.exp(x - 1) + 4
+    return np.exp(x - 1) + 4            # Change this to your function's second derivative
 
 
-a0, b0 = 0, 3
+a0, b0 = 0, 3                           # Change this to interval you want
 n = (b0 - a0) * 100
-step = 0.25
+step = 0.25                             # Change this to step you want
 x_val = np.arange(a0, b0+step, step)
 y_val = f(x_val)
 print("Результаты расчетов")
@@ -54,9 +54,9 @@ plt.ylabel('f(x)')
 plt.savefig(r'Lab1/Results/1.png')
 
 
-a, b = 1, 2
-eps = 1e-7
-h = 1e-5
+a, b = 1, 2                              # Change this to interval you want
+eps = 1e-7                               # Change this to proximity you want
+h = 1e-5                                 # Change this to h you want
 full_result = pd.DataFrame(columns=['Метод решения', 'Выбранный интервал [a,b]', 'Полученное решение', 'Количество итераций'])
 
 
@@ -98,7 +98,7 @@ full_result = pd.concat([full_result, logger('Finite differential Newton method'
 
 
 # Метод Стеффенсена
-x = 1.4
+x = 1.4                        # Change this to interval you want
 result = [f'{x:.8f}']
 while abs(f(x)) > eps: 
         x = x - f(x)**2 / (f(x + f(x)) - f(x))
