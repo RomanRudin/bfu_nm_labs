@@ -3,7 +3,6 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from math import *
 from pathlib import Path
-import os
 
 WORKDIR = Path(__file__).parent
 if not Path.exists(Path(fr'{WORKDIR}\Results')):
