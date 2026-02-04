@@ -45,8 +45,8 @@ def zeidel(matrix: list[list[float]], b: list[float]) -> tuple[bool, list[list[f
     for step in range(len(matrix)-1):
         change_to_leading(matrix, b, step)
     checked = all(calculate_row_condition(matrix[i], i) > 0 for i in range(len(matrix)))
-    if not checked:
-        return checked, matrix, b, None, None
+    # if not checked:
+    #     return checked, matrix, b, None, None
     counter = 0
     x = [0] * len(matrix)
     x_prev = [inf] * len(matrix)
@@ -88,8 +88,8 @@ if __name__ == '__main__':
         file.write('Usage of Zeidel is possible:' + '\t' + str(zeidel_possible) + '\n' * 3)
         file.write('Prepared matrix:\n')
         file.writelines('\n'.join(['\t'.join([OUTPUT_EPSILON.format(item) for item in A_zeidel[i]]) + '\t|\t' + OUTPUT_EPSILON.format(b_zeidel[i]) for i in range(len(A))]))
-        if not zeidel_possible:
-            exit(0)
+        # if not zeidel_possible:
+        #     exit(0)
         file.write('\n' * 3)
         file.write('Vector of approximate solution:\n')
         file.write('\n'.join([OUTPUT_EPSILON.format(item) for item in ans_zeidel]))
