@@ -50,7 +50,7 @@ def zeidel(matrix: list[list[float]], b: list[float]) -> tuple[bool, list[list[f
     counter = 0
     x = [0] * len(matrix)
     x_prev = [inf] * len(matrix)
-    while all([abs(x[i] - x_prev[i]) > ZEIDEL_EPSILON for i in range(len(matrix))]):
+    while any([abs(x[i] - x_prev[i]) > ZEIDEL_EPSILON for i in range(len(matrix))]):
     # for _ in range(10):
         x_prev = copy.deepcopy(x)
         for i in range(len(matrix)):
@@ -88,6 +88,8 @@ if __name__ == '__main__':
         file.write('Usage of Zeidel is possible:' + '\t' + str(zeidel_possible) + '\n' * 3)
         file.write('Prepared matrix:\n')
         file.writelines('\n'.join(['\t'.join([OUTPUT_EPSILON.format(item) for item in A_zeidel[i]]) + '\t|\t' + OUTPUT_EPSILON.format(b_zeidel[i]) for i in range(len(A))]))
+        if not zeidel_possible:
+            exit(0)
         file.write('\n' * 3)
         file.write('Vector of approximate solution:\n')
         file.write('\n'.join([OUTPUT_EPSILON.format(item) for item in ans_zeidel]))

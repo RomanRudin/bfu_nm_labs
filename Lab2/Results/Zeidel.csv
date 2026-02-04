@@ -11,15 +11,15 @@ Prepared matrix:
 
 
 Vector of approximate solution:
-0.99999988
-1.99999993
--0.99999998
-1.00000003
+1.00000001
+2.00000001
+-1.00000000
+1.00000000
 
 
 Number of iterations:
-7
+8
 
 
 Calculated error:
-1.2403869631416597e-07
+1.2731093956830364e-08
