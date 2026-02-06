@@ -3,8 +3,6 @@ from pathlib import Path
 from math import *
 import copy
 
-OUTPUT_EPSILON = '{:0.8f}'
-ZEIDEL_EPSILON = 1e-6
 WORKDIR = Path(__file__).parent
 if not Path.exists(Path(fr'{WORKDIR}\Results')):
     Path.mkdir(Path(fr'{WORKDIR}\Results'))
@@ -37,7 +35,7 @@ def gauss(matrix: list[list[float]], b: list[float]) -> tuple[list[list[float]],
     x = [0] * len(matrix)
     for step in range(len(matrix)-1, -1, -1):
         x[step] = (b[step] - sum([matrix[step][i] * x[i] for i in range(len(matrix))])) / matrix[step][step]
-    return matrix, b, x
+    return matrix, b, x, 0
 
 
 
@@ -45,18 +43,18 @@ def zeidel(matrix: list[list[float]], b: list[float]) -> tuple[bool, list[list[f
     for step in range(len(matrix)-1):
         change_to_leading(matrix, b, step)
     checked = all(calculate_row_condition(matrix[i], i) > 0 for i in range(len(matrix)))
-    # if not checked:
-    #     return checked, matrix, b, None, None
     counter = 0
     x = [0] * len(matrix)
     x_prev = [inf] * len(matrix)
-    while any([abs(x[i] - x_prev[i]) > ZEIDEL_EPSILON for i in range(len(matrix))]):
-    # for _ in range(10):
+    error = inf
+    while error > ZEIDEL_EPSILON:
+    # for _ in range(3):
         x_prev = copy.deepcopy(x)
         for i in range(len(matrix)):
             x[i] = (b[i] - sum([matrix[i][j] * x[j] for j in range(len(matrix)) if i != j])) / matrix[i][i]
         counter += 1
-    return checked, matrix, b, x, counter
+        error = max([abs(x[i] - x_prev[i]) for i in range(len(matrix))]) 
+    return checked, matrix, b, x, counter, error
 
 
 
@@ -70,7 +68,13 @@ if __name__ == '__main__':
     b     = [ 16.4,     5.0,     7.2,    -5.0  ]
     x_true= [  1.0,     2.0,    -1.0,     1.0  ]
 
-    A_gauss, b_gauss, ans_gauss = gauss(copy.deepcopy(A), copy.deepcopy(b))
+    eps = len(str(A[0][0]).split('.')[-1])
+    print(f'Please, change OUTPUT_EPSILON to {eps + 1} or {eps + 2} and ZEIDEL_EPSILON {eps}. Change ZEIDEL_ERROR_OUTPUT_EPSILON if you need too.')
+    OUTPUT_EPSILON = '{:0.2f}'
+    ZEIDEL_EPSILON = 1e-1
+    ZEIDEL_ERROR_OUTPUT_EPSILON = '{:0.3f}'
+
+    A_gauss, b_gauss, ans_gauss, error = gauss(copy.deepcopy(A), copy.deepcopy(b))
     with open(fr'{WORKDIR}\Results\Guass.csv', 'w') as file:
         file.write('Gauss method:' + '\n' * 2)
         file.write('Prepared matrix:\n')
@@ -80,16 +84,18 @@ if __name__ == '__main__':
         file.write('\n'.join([OUTPUT_EPSILON.format(item) for item in ans_gauss]))
         file.write('\n' * 3)
         file.write('Calculation error:\n')
-        file.write(str(max(abs(np.array(ans_gauss) - np.array(x_true)))))
+        file.write(f'{error}. The method is an exact method')
     
-    zeidel_possible, A_zeidel, b_zeidel, ans_zeidel, num_iter = zeidel(copy.deepcopy(A), copy.deepcopy(b))
+    zeidel_possible, A_zeidel, b_zeidel, ans_zeidel, num_iter, error = zeidel(copy.deepcopy(A), copy.deepcopy(b))
     with open(fr'{WORKDIR}\Results\Zeidel.csv', 'w') as file:
         file.write('Iterative Gauss-Zeidel method:' + '\n' * 2)
         file.write('Usage of Zeidel is possible:' + '\t' + str(zeidel_possible) + '\n' * 3)
         file.write('Prepared matrix:\n')
         file.writelines('\n'.join(['\t'.join([OUTPUT_EPSILON.format(item) for item in A_zeidel[i]]) + '\t|\t' + OUTPUT_EPSILON.format(b_zeidel[i]) for i in range(len(A))]))
-        # if not zeidel_possible:
-        #     exit(0)
+        if not zeidel_possible:
+            file.write('\n' * 3)
+            file.write('A sufficient (but not necessary!) condition is not met. Perhaps a matrix transformation is necessary.\n')
+            file.write('Look at page 301 at Demidovich-Maron')
         file.write('\n' * 3)
         file.write('Vector of approximate solution:\n')
         file.write('\n'.join([OUTPUT_EPSILON.format(item) for item in ans_zeidel]))
@@ -98,4 +104,4 @@ if __name__ == '__main__':
         file.write(str(num_iter))
         file.write('\n' * 3)
         file.write('Calculated error:\n')
-        file.write(str(max(abs(np.array(ans_zeidel) - np.array(x_true)))))
+        file.write(ZEIDEL_ERROR_OUTPUT_EPSILON.format(error))
