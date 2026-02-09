@@ -20,7 +20,7 @@ def logger(func_name: str, func: Callable) -> None:
         file.write(f'Method error: \t {METHOD_EPSILON(delta)}' + '\n')
         file.write(f'h: \t {OUTPUT_EPSILON(h)}' + '\n')
         file.write(f'n: \t {n}' + '\n')
-        file.write(f'Number of iterations: \t {int(log2(n))}' + '\n')
+        file.write(f'Number of iterations: \t {int(log2(n)) - 1}' + '\n')
 
 
 
