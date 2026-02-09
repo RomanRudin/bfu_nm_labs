@@ -1,10 +1,10 @@
 RIGHT RECTANGLES METHOD
 
-Exact value: 	 1.218951
-Obtained value: 	 1.219002
-Calculation error: 	 -0.000051
-Relative error: 	 0.004148%
-Method error: 	 0.000000
-
-Number of iterations: 	 12
+Exact value: 	 1.21895
+Obtained value: 	 1.21900
+Calculation error: 	 0.00005
+Relative error: 	 0.00415%
+Method error: 	 6.20882e-10
+h: 	 0.00024
 n: 	 4096
+Number of iterations: 	 12

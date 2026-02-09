@@ -1,10 +1,10 @@
 SIMPSON METHOD
 
-Exact value: 	 1.218951
-Obtained value: 	 1.218951
-Calculation error: 	 0.000006
-Relative error: 	 0.000034%
-Method error: 	 0.000000
-
-Number of iterations: 	 3
+Exact value: 	 1.21895
+Obtained value: 	 1.21895
+Calculation error: 	 0.00001
+Relative error: 	 0.00003%
+Method error: 	 7.94729e-08
+h: 	 0.12500
 n: 	 8
+Number of iterations: 	 3

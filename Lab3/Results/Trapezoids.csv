@@ -1,10 +1,10 @@
 TRAPEZOIDS METHOD
 
-Exact value: 	 1.218951
-Obtained value: 	 1.218896
-Calculation error: 	 0.000056
-Relative error: 	 0.004578%
-Method error: 	 0.000000
-
-Number of iterations: 	 14
+Exact value: 	 1.21895
+Obtained value: 	 1.21890
+Calculation error: 	 0.00006
+Relative error: 	 0.00458%
+Method error: 	 7.76102e-11
+h: 	 0.00006
 n: 	 16384
+Number of iterations: 	 14
