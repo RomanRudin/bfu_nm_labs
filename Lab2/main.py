@@ -53,6 +53,7 @@ def zeidel(matrix: list[list[float]], b: list[float]) -> tuple[bool, list[list[f
             x[i] = (b[i] - sum([matrix[i][j] * x[j] for j in range(len(matrix)) if i != j])) / matrix[i][i]
         counter += 1
         error = max([abs(x[i] - x_prev[i]) for i in range(len(matrix))]) 
+        print([OUTPUT_EPSILON.format(item) for item in x], OUTPUT_EPSILON.format(error))
     return checked, matrix, b, x, counter, error
 
 
