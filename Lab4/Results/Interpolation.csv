@@ -1,0 +1,16 @@
+xk	1.0000	1.1000	1.2000	1.3000
+yk	-0.4161	-0.5885	-0.7374	-0.8569
+
+
+Interpolated value
+-0.70978
+
+Exact value
+-0.70979
+
+
+Method error
+0.00001
+
+Calculation error
+0.00002
