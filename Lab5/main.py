@@ -1,36 +1,26 @@
 import numpy as np
 from pathlib import Path
-from math import *
+import pandas as pd
+from typing import Callable
+from math import log10
 
 WORKDIR = Path(__file__).parent
 if not Path.exists(Path(fr'{WORKDIR}\Results')):
     Path.mkdir(Path(fr'{WORKDIR}\Results'))
 
 
-import numpy as np
-import pandas as pd
-from pathlib import Path
-
-EPS = 0.001
-a, b = 0.0, 0.5
-
-WORKDIR = Path.cwd()
-RESULTS_DIR = WORKDIR / "Results_5_lab"
-RESULTS_DIR.mkdir(exist_ok = True)
+def f1(x, y) -> float:
+    return np.cos(1.5 * x + y) + (x - y)
 
 
-def f1(x, y):
-    return np.cos(x**2 - y**2) + 0.2 * y
-
-
-def f2_system(x, Y):
+def f2_system(x, Y) -> np.ndarray:
     y1, y2 = Y
     dy1 = y2
-    dy2 = 1 - np.sin(0.75 * x + y1**2)
+    dy2 = np.cos(1.5 + x) + 0.1 * y1**2
     return np.array([dy1, dy2])
 
 
-def euler_cauchy(f, n):
+def euler_cauchy(f: Callable, n: int) -> tuple:
     h = (b - a) / n
     x = np.linspace(a, b, n + 1)
     y = np.zeros(n + 1)
@@ -44,7 +34,7 @@ def euler_cauchy(f, n):
     return x, y
 
 
-def runge_kutta4(f, n):
+def runge_kutta4(f: Callable, n: int) -> tuple:
     h = (b - a) / n
     x = np.linspace(a, b, n + 1)
     y = np.zeros(n + 1)
@@ -60,7 +50,7 @@ def runge_kutta4(f, n):
     return x, y
 
 
-def rk4_system(f, n):
+def rk4_system(f: Callable, n: int) -> tuple:
     h = (b - a) / n
     x = np.linspace(a, b, n + 1)
     Y = np.zeros((n + 1, 2))
@@ -77,7 +67,7 @@ def rk4_system(f, n):
     return x, Y
 
 
-def adams3(f, n):
+def adams3(f: Callable, n: int) -> tuple:
     h = (b - a) / n
     x, Y = rk4_system(f, n)
 
@@ -91,7 +81,7 @@ def adams3(f, n):
     return x, Y[:, 0]
 
 
-def adams4(f, n):
+def adams4(f: Callable, n: int) -> tuple:
     h = (b - a) / n
     x, Y = rk4_system(f, n)
 
@@ -106,7 +96,7 @@ def adams4(f, n):
     return x, Y[:, 0]
 
 
-def double_recalculation(method, f):
+def calculate(method: Callable, f: Callable) -> tuple:
     n = 2
 
     while True:
@@ -114,58 +104,48 @@ def double_recalculation(method, f):
         x_last, y_last = method(f, 2 * n-1)
         y_last_match = y_last[::2]
         diff = np.max(np.abs(y_prev - y_last_match))
-
-        if diff < EPS:
+        if diff < EPSILON:
             print(diff)
             print(f"n:{2*n}")
             return n, x_prev, y_prev, 2*n, x_last, y_last
+        n *= 2
 
-        n = 2*n
 
+def save(method_name: str, n_prev: int, x_prev: list, y_prev: list, n_last: int, x_last: list, y_last: list) -> None:
+    y_prev_sel = list(map(lambda x: str(x), y_prev[-8:]))
+    for i in range(8):
+        y_prev_sel.insert(2*i, '-')
+    y_last_sel = y_last[-16:]
 
-def save_table(method_name, n_prev, x_prev, y_prev, n_last, x_last, y_last):
-    x_match = x_last[::2]
-    y_last_match = y_last[::2]
+    diff = [abs(last - float(prev)) if prev != '-' else '-' for last, prev in zip(y_last_sel, y_prev_sel)]
 
-    x_prev_sel = x_match[-8:]
-    y_prev_sel = y_prev[-8:]
-    y_last_sel = y_last_match[-8:]
-
-    diff = np.abs(y_last_sel - y_prev_sel)
-
-    df_prev = pd.DataFrame({
-        "x_k": x_prev_sel,
+    df = pd.DataFrame({
+        "x_k": x_last[-16:],
         "y_prev": y_prev_sel,
         "y_last": y_last_sel,
         "difference": diff
     })
-    df_last = pd.DataFrame({
-        "x_k": x_last[-16:],
-        "y_last": y_last[-16:]
-    })
 
-    df_prev = df_prev.round(4)
-    df_last = df_last.round(4)
+    df = df.round(int(abs(log10(EPSILON))) + 1)
+    df.to_csv(fr'{WORKDIR}\Results\{method_name}.csv', index = False)
 
-    df_prev.to_csv(RESULTS_DIR / f"{method_name}_prev.csv", index = False)
-    df_last.to_csv(RESULTS_DIR / f"{method_name}_last.csv", index = False)
-
-    print("\n")
-    print("Метод:", method_name)
-    print("Число точек разбиения последней итерации:", n_last)
-
-n_prev, x_prev, y_prev, n_last, x_last, y_last = double_recalculation(euler_cauchy, f1)
-save_table("Euler_Cauchy_eq1", n_prev, x_prev, y_prev, n_last, x_last, y_last)
-
-n_prev, x_prev, y_prev, n_last, x_last, y_last = double_recalculation(runge_kutta4, f1)
-save_table("Runge_Kutta4_eq1", n_prev, x_prev, y_prev, n_last, x_last, y_last)
-
-n_prev, x_prev, y_prev, n_last, x_last, y_last = double_recalculation(adams3, f2_system)
-save_table("Adams3_eq2", n_prev, x_prev, y_prev, n_last, x_last, y_last)
-
-n_prev, x_prev, y_prev, n_last, x_last, y_last = double_recalculation(adams4, f2_system)
-save_table("Adams4_eq2", n_prev, x_prev, y_prev, n_last, x_last, y_last)
+    print()
+    print("Method:", method_name)
+    print("n on last iteration:", n_last)
 
     
 if __name__ == "__main__":
-    pass
+    EPSILON = 0.001
+    a, b = 0.0, 0.5
+
+    n_prev, x_prev, y_prev, n_last, x_last, y_last = calculate(euler_cauchy, f1)
+    save("Euler_Cauchy_eq1", n_prev, x_prev, y_prev, n_last, x_last, y_last)
+
+    n_prev, x_prev, y_prev, n_last, x_last, y_last = calculate(runge_kutta4, f1)
+    save("Runge_Kutta4_eq1", n_prev, x_prev, y_prev, n_last, x_last, y_last)
+
+    n_prev, x_prev, y_prev, n_last, x_last, y_last = calculate(adams3, f2_system)
+    save("Adams3_eq2", n_prev, x_prev, y_prev, n_last, x_last, y_last)
+
+    n_prev, x_prev, y_prev, n_last, x_last, y_last = calculate(adams4, f2_system)
+    save("Adams4_eq2", n_prev, x_prev, y_prev, n_last, x_last, y_last)
