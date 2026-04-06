@@ -2,6 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from pathlib import Path
 from mpl_toolkits.mplot3d import Axes3D
+import pandas as pd
 
 WORKDIR = Path(__file__).parent
 if not Path.exists(Path(fr'{WORKDIR}\Results')):
@@ -9,7 +10,7 @@ if not Path.exists(Path(fr'{WORKDIR}\Results')):
 
 
 
-def initial_condition(x) -> np.ndarray:
+def initial_condition(x: np.ndarray) -> np.ndarray:
     return np.where(x < 0.5, 4.0, 2.0)
 
 def exact_solution(x: np.ndarray, t: float) -> np.ndarray:
@@ -18,7 +19,7 @@ def exact_solution(x: np.ndarray, t: float) -> np.ndarray:
         return np.where(x < shock_pos, 4.0, 2.0)
     return np.full_like(x, 4.0)
 
-def flux(u) -> float:
+def flux(u: float) -> float:
     return 0.5 * u ** 2
 
 
@@ -108,6 +109,27 @@ def plot3d(U_3d: np.ndarray, title: str, filename: str) -> None:
 
 
 
+def table(U: np.ndarray, filename: str) -> None:
+    x_step = nx // 10
+    t_step = nt // 10
+    U_new = U[::t_step, ::x_step]
+    while U_new.shape[0] > 10:
+        U_new = U_new[:-1, :]
+    while U_new.shape[1] > 10:
+        U_new = U_new[:, :-1]
+    # КОСТЫЛЬ. Тип данных np.float64 почему-то не имеет фнкционала из строки 126, потому приводим к float. Но если просто написать float, то, так как данные находятся в np.ndarray - они приведутся к np.float_
+    class normal_float(float):
+        pass
+    U_new = U_new.astype(normal_float)
+    for i in range(len(U_new)):
+        for j in range(len(U_new[i])):
+            U_new[i][j] = '{:0.3f}'.format(U_new[i][j])
+    df = pd.DataFrame(U_new, 
+                        columns=list(map(lambda x: '{:0.3f}'.format(x).rjust(7, ' '), np.arange(x_start, x_end, dx * x_step))), 
+                        index=list(map(lambda x: '{:0.3f}'.format(x), np.arange(0, dt * nt, dt * t_step))))
+    df.to_csv(f"{WORKDIR}/Results/{filename}.csv", sep='\t')
+
+
 
 if __name__ == "__main__":
     nx = 200
@@ -127,5 +149,7 @@ if __name__ == "__main__":
 
     plot(U_init, U_con, U_exact, "Консервативная схема", "conservative")
     plot(U_init, U_visc, U_exact, "Искусственная вязкость", "viscosity")
-    plot3d(U_con_3d, "Консервативная схема", "conservative_3d")
-    plot3d(U_visc_3d, "Искусственная вязкость", "viscosity_3d")
+    plot3d(U_con_3d, "Консервативная схема", "conservative")
+    plot3d(U_visc_3d, "Искусственная вязкость", "viscosity")
+    table(U_con_3d, "conservative_3d")
+    table(U_visc_3d, "viscosity_3d")
