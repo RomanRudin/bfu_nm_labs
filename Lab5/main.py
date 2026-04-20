@@ -96,7 +96,7 @@ def adams4(f: Callable, n: int) -> tuple:
     return x, Y[:, 0]
 
 def calculate(method: Callable, f: Callable) -> tuple:
-    n = 8
+    n = 2
 
     while True:
         x_prev, y_prev = method(f, n)
@@ -108,50 +108,9 @@ def calculate(method: Callable, f: Callable) -> tuple:
             print(f"n:{2*n}")
             return n+1, x_prev, y_prev, 2*n+1, x_last, y_last
         n *= 2
-# def calculate(method: Callable, f: Callable) -> tuple:
-#     n = 2
-
-#     while True:
-#         x_prev, y_prev = method(f, n-1)
-#         x_last, y_last = method(f, 2 * (n-1))
-#         y_last_match = y_last[::2]
-#         diff = np.max(np.abs(y_prev - y_last_match))
-#         if diff < EPSILON:
-#             print(diff)
-#             print(f"n:{2*n}")
-#             return n, x_prev, y_prev, 2*n, x_last, y_last
-#         n *= 2
 
 
 def save(method_name: str, n_prev: int, x_prev: list, y_prev: list, n_last: int, x_last: list, y_last: list) -> None:
-    # 8 = min(8, len(y_prev))
-    # 16 = min(16, len(y_last))
-    # adding = 8
-    # if 8 * 2 > 16:
-    #     adding = 16 -  8
-    # y_prev_sel = list(map(lambda x: '{:0.4f}'.format(x), y_prev[-8:]))
-    # x_sel = list(map(lambda x: '{:0.4f}'.format(x), x_last[-16:]))
-    # for i in range(adding):
-    #     y_prev_sel.insert(2 * i + adding % 2, '  -  ')
-    # y_last_sel = y_last[-16:]
-
-    # diff = [abs(last - float(prev)) if prev != '  -  ' else '  -  ' for last, prev in zip(y_last_sel, y_prev_sel)]
-    # diff = map(lambda x: '{:0.6f}'.format(x) if x != '  -  ' else '  -  ', diff)
-    # y_last_sel = list(map(lambda x: '{:0.4f}'.format(x), y_last_sel))
-
-    # df = pd.DataFrame({
-    #     "x_k   ": x_sel,
-    #     "y_prev": y_prev_sel,
-    #     "y_last": y_last_sel,
-    #     "difference": diff
-    # })
-
-    # df.to_csv(fr'{WORKDIR}\Results\{method_name}.csv', index = False, sep = '\t')
-
-    # print()
-    # print("Method:", method_name)
-    # print("n on last iteration:", n_last)
-    
     points_prev = min(8, len(y_prev))
     points_last = min(16, len(y_last))
     adding = points_last - points_prev
